@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Words Speaker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="data-field">
+        <div class="speed-control">
+            <label for="speedDropdown">Speed:</label>
+            <select id="speedDropdown">
+                <option value="15">15 WPM</option>
+                <option value="15">16 WPM</option>
+                <option value="15">17 WPM</option>
+                <option value="15">18 WPM</option>
+                <option value="15">19 WPM</option>
+                <option value="20">20 WPM</option>
+                <option value="15">21 WPM</option>
+                <option value="15">22 WPM</option>
+                <option value="15">23 WPM</option>
+                <option value="15">24 WPM</option>
+                <option value="25">25 WPM</option>
+                <option value="15">26 WPM</option>
+                <option value="15">27 WPM</option>
+                <option value="15">28 WPM</option>
+                <option value="15">29 WPM</option>
+                <option value="30">30 WPM</option>
+                <option value="custom">Custom</option>
+            </select>
+
+            <!-- Custom speed input (hidden by default) -->
+            <input type="number" id="customSpeed" placeholder="Enter WPM" min="1" max="300" style="display: none;">
+        </div>
+
+        <div class="speaker-toggle">
+            <label for="speaker-toggle-radio">Speak</label>
+            <input type="checkbox" name="speaker-toggle-radio" id="speaker-toggle-radio">
+        </div>
+    </div>
+
+    <div>
+        <label for="random-words-toggle">Random Words</label>
+        <input type="radio" name="mode-selector" id="random-words-toggle" value="random" checked>
+        <label for="custom-text-toggle">Custom Text</label>
+        <input type="radio" name="mode-selector" id="custom-text-toggle" value="custom">
+    </div>
+
+    <div>
+        <span id="current-word"></span>
+
+        <textarea id="custom-text-field" style="display: none;"></textarea>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
