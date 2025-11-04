@@ -4,54 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Words Speaker</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="main-div">
+        <div>
+            <label class="header">Random Words Speaker</label>
+        </div>
 
-    <div class="data-field">
+        <div class="current-word-class" id="current-word-div">Hello!
+            <!-- <span class="current-word-class">Hello!!</span> -->
+        </div>
+        
+        
         <div class="speed-control">
-            <label for="speedDropdown">Speed:</label>
-            <select id="speedDropdown">
+            <label for="speed-drop-down">Speed:</label>
+            <select id="speed-drop-down">
                 <option value="15">15 WPM</option>
-                <option value="15">16 WPM</option>
-                <option value="15">17 WPM</option>
-                <option value="15">18 WPM</option>
-                <option value="15">19 WPM</option>
-                <option value="20">20 WPM</option>
-                <option value="15">21 WPM</option>
-                <option value="15">22 WPM</option>
-                <option value="15">23 WPM</option>
-                <option value="15">24 WPM</option>
+                <option value="16">16 WPM</option>
+                <option value="17">17 WPM</option>
+                <option value="18">18 WPM</option>
+                <option value="19">19 WPM</option>
+                <option value="20" selected="selected">20 WPM</option>
+                <option value="21">21 WPM</option>
+                <option value="22">22 WPM</option>
+                <option value="23">23 WPM</option>
+                <option value="24">24 WPM</option>
                 <option value="25">25 WPM</option>
-                <option value="15">26 WPM</option>
-                <option value="15">27 WPM</option>
-                <option value="15">28 WPM</option>
-                <option value="15">29 WPM</option>
+                <option value="26">26 WPM</option>
+                <option value="27">27 WPM</option>
+                <option value="28">28 WPM</option>
+                <option value="29">29 WPM</option>
                 <option value="30">30 WPM</option>
                 <option value="custom">Custom</option>
             </select>
 
+            
             <!-- Custom speed input (hidden by default) -->
-            <input type="number" id="customSpeed" placeholder="Enter WPM" min="1" max="300" style="display: none;">
-        </div>
-
-        <div class="speaker-toggle">
+            <input type="number" id="custom-speed-input" placeholder="Enter in WPM" min="1" max="300" style="display: none;">
+            <button id="custom-speed-button" style="display: none;">Set Custom Speed</button>
             <label for="speaker-toggle-radio">Speak</label>
-            <input type="checkbox" name="speaker-toggle-radio" id="speaker-toggle-radio">
+            <input type="checkbox" name="speaker-toggle-radio" id="speaker-toggle-radio" checked>
         </div>
-    </div>
 
-    <div>
-        <label for="random-words-toggle">Random Words</label>
-        <input type="radio" name="mode-selector" id="random-words-toggle" value="random" checked>
-        <label for="custom-text-toggle">Custom Text</label>
-        <input type="radio" name="mode-selector" id="custom-text-toggle" value="custom">
-    </div>
+        <div>
+            <label for="random-words-toggle">Random Words</label>
+            <input type="radio" name="mode-selector" id="random-words-toggle" value="random" checked>
+            <label for="custom-text-toggle">Custom Text</label>
+            <input type="radio" name="mode-selector" id="custom-text-toggle" value="custom">
+        </div>
 
-    <div>
-        <span id="current-word"></span>
+        <div>
+            <button id="play-button">Play</button>
+            <button id="reset-button">Reset</button>
+        </div>
 
-        <textarea id="custom-text-field" style="display: none;"></textarea>
+        
+        <div>
+            <span>Average Speed (WPM):</span>
+            <span id="avg-wpm-span"></span>
+        </div>
+        <div>
+            <span>Average Speed (LPM):</span>
+            <span id="avg-lpm-span"></span>
+        </div>
+        <div>
+            <span>No of words generated:</span>
+            <span id="no-of-words-span"></span>
+        </div>
+        <div>
+            <span>No of letters generated:</span>
+            <span id="no-of-letters-span"></span>
+        </div>   
+        <div>
+            <span>Time elapsed:</span>
+            <span id="time-elapsed-span"></span>
+        </div>
+
+        <div>
+            <textarea id="custom-text-field" style="display: none;"></textarea>
+            <button id="custom-text-button" style="display: none;">Submit</button>
+        </div>
     </div>
 
     <script src="script.js"></script>
