@@ -1,6 +1,5 @@
 const randomWordsToggle = document.getElementById('random-words-toggle');
 const customTextToggle = document.getElementById('custom-text-toggle');
-const customTextButton = document.getElementById('custom-text-button');
 const customTextField = document.getElementById('custom-text-field');
 const speakerToggle = document.getElementById('speaker-toggle-radio');
 
@@ -41,7 +40,6 @@ randomWordsToggle.addEventListener('change', function() {
     if (this.checked) {
         currentMode = 'random';
         customTextField.style.display = 'none';
-        customTextButton.style.display = 'none';
     }
 });
 
@@ -49,17 +47,15 @@ customTextToggle.addEventListener('change', function () {
     if (this.checked) {
         currentMode = 'custom';
         customTextField.style.display = 'block';
-        customTextButton.style.display = 'block';
+        playButton.click();
     }
 });
 
-customTextButton.addEventListener('click', function () {
+function setCustomWords() {
     let text = customTextField.value;
-    console.log("text: " + text);
     customWords = text.match(/[A-Za-z0-9]+/g) || [];
     customWords = text.match(/[A-Za-z0-9-]+/g) || [];
-    console.log("Custom Words are: " + customWords.toString());
-});
+}
 
 speakerToggle.addEventListener('change', function () {
     ifSpeak = !ifSpeak;
@@ -81,12 +77,15 @@ speedDropDown.addEventListener('change', function() {
 
 customSpeedButton.addEventListener('click', function () {
     currentSpeed = (customSpeedInput.value ? customSpeedInput.value : currentSpeed);
-    console.log (currentSpeed)
 });
 
 playButton.addEventListener('click', async function () {
     isPlaying = !isPlaying;
-    playButton.textContent = (isPlaying ? 'Pause' : 'Play');
+    playButton.textContent = (isPlaying ? 'Pause' : (noOfWords > 0 ? 'Resume' : 'Play'));
+
+    if (currentMode == 'custom') {
+        setCustomWords();
+    }
     
     while (isPlaying) {
         await new Promise(resolve => setTimeout(resolve, timePeriod));
@@ -122,7 +121,7 @@ playButton.addEventListener('click', async function () {
         }
     }
     
-})
+});
 
 resetButton.addEventListener('click', function () {
     isPlaying = false;
@@ -142,7 +141,7 @@ resetButton.addEventListener('click', function () {
     noOfWordsSpan.textContent = noOfWords.toString();
     noOfLettersSpan.textContent = noOfLetters.toString();
     timeElapsedSpan.textContent = (timeElapsed/1000).toString() + " secs";
-})
+});
 
 async function loadWords () {
     const response = await fetch('words.txt');
