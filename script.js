@@ -2,6 +2,7 @@ const randomWordsToggle = document.getElementById('random-words-toggle');
 const customTextToggle = document.getElementById('custom-text-toggle');
 const customTextField = document.getElementById('custom-text-field');
 const speakerToggle = document.getElementById('speaker-toggle-radio');
+const voiceDropDown = document.getElementById('voice-drop-down');
 
 const randomWordsDisplay = document.getElementById('current-word');
 
@@ -31,10 +32,29 @@ let timeElapsed = 0;
 let timePeriod = 3000; // setting default timePeriod to 3 seconds
 let currentSpeed = 20;
 let ifSpeak = true;
+let voices = [];
 
 (async () => {
     randomWords = await loadWords();
 })();
+
+function populateVoices() {
+    voices = speechSynthesis.getVoices();
+    voiceDropDown.innerHTML = "";
+
+    voices.forEach((voice, index) => {
+        if (voice.lang == 'en-US') {
+            const option = document.createElement("option");
+            option.value = index;
+            option.textContent = "Voice " + (index+1).toString();
+            if (voice.default) option.textContent += " — Default";
+            voiceDropDown.appendChild(option);
+        }
+    });
+}
+
+speechSynthesis.onvoiceschanged = populateVoices;
+
 
 randomWordsToggle.addEventListener('change', function() {
     if (this.checked) {
@@ -79,7 +99,20 @@ customSpeedButton.addEventListener('click', function () {
     currentSpeed = (customSpeedInput.value ? customSpeedInput.value : currentSpeed);
 });
 
+function getCleanTimeText (timeInputInSeconds) {
+    let timeInSeconds = parseInt(timeInputInSeconds);
+    let hours = parseInt(timeInSeconds/3600);
+    timeInSeconds = timeInSeconds - hours*60;
+    let minutes = parseInt(timeInSeconds/60);
+    let seconds = timeInSeconds - minutes*60;
+    let retString = (hours > 0 ? hours.toString() + "h ": "")
+                    + (minutes > 0 ? minutes.toString() + "m ": "")
+                    + seconds.toString() + "s";
+    return retString;
+}
+
 playButton.addEventListener('click', async function () {
+    
     isPlaying = !isPlaying;
     playButton.textContent = (isPlaying ? 'Pause' : (noOfWords > 0 ? 'Resume' : 'Play'));
 
@@ -115,7 +148,7 @@ playButton.addEventListener('click', async function () {
             currentWordDiv.textContent = selectedWord;
             noOfWordsSpan.textContent = noOfWords.toString();
             noOfLettersSpan.textContent = noOfLetters.toString();
-            timeElapsedSpan.textContent = (timeElapsed/1000).toFixed(2).toString() + " secs";
+            timeElapsedSpan.textContent = getCleanTimeText(timeElapsed/1000);
             
             if (ifSpeak) speakWord(selectedWord);
         }
@@ -140,7 +173,7 @@ resetButton.addEventListener('click', function () {
     currentWordDiv.textContent = selectedWord;
     noOfWordsSpan.textContent = noOfWords.toString();
     noOfLettersSpan.textContent = noOfLetters.toString();
-    timeElapsedSpan.textContent = (timeElapsed/1000).toString() + " secs";
+    timeElapsedSpan.textContent = (timeElapsed/1000).toString() + "s";
 });
 
 async function loadWords () {
@@ -151,6 +184,10 @@ async function loadWords () {
 
 function speakWord(word) {
     const utterance = new SpeechSynthesisUtterance(word);
-    utterance.lang = 'en-US';
+    // utterance.lang = 'en-US';
+    const selectedVoice = voices[voiceDropDown.value];
+    if (selectedVoice) {
+        utterance.voice = selectedVoice;
+    }
     speechSynthesis.speak(utterance);
 }
