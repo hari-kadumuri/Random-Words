@@ -20,8 +20,8 @@ const noOfLettersSpan = document.getElementById('no-of-letters-span');
 const timeElapsedSpan = document.getElementById('time-elapsed-span');
 const currentWordDiv = document.getElementById('current-word-div');
 
-let randomWords;
-let customWords;
+let randomWords = [];
+let customWords = [];
 let currentMode = 'random';
 let isPlaying = false;
 let noOfWords = 0;
@@ -59,13 +59,16 @@ speechSynthesis.onvoiceschanged = populateVoices;
 randomWordsToggle.addEventListener('change', function() {
     if (this.checked) {
         currentMode = 'random';
+        isPlaying = true;
         customTextField.style.display = 'none';
+        playButton.click();
     }
 });
 
 customTextToggle.addEventListener('change', function () {
     if (this.checked) {
         currentMode = 'custom';
+        isPlaying = true;
         customTextField.style.display = 'block';
         playButton.click();
     }
@@ -102,7 +105,7 @@ customSpeedButton.addEventListener('click', function () {
 function getCleanTimeText (timeInputInSeconds) {
     let timeInSeconds = parseInt(timeInputInSeconds);
     let hours = parseInt(timeInSeconds/3600);
-    timeInSeconds = timeInSeconds - hours*60;
+    timeInSeconds = timeInSeconds - hours*3600;
     let minutes = parseInt(timeInSeconds/60);
     let seconds = timeInSeconds - minutes*60;
     let retString = (hours > 0 ? hours.toString() + "h ": "")
@@ -112,7 +115,6 @@ function getCleanTimeText (timeInputInSeconds) {
 }
 
 playButton.addEventListener('click', async function () {
-    
     isPlaying = !isPlaying;
     playButton.textContent = (isPlaying ? 'Pause' : (noOfWords > 0 ? 'Resume' : 'Play'));
 
@@ -124,9 +126,14 @@ playButton.addEventListener('click', async function () {
         await new Promise(resolve => setTimeout(resolve, timePeriod));
         if (isPlaying) {
             timePeriod = 60*1000/currentSpeed;
+
+            let randomIndex = 0;
+            let selectedWord = "Hello!!";
             
-            let randomIndex = Math.floor(Math.random()*randomWords.length);
-            let selectedWord = randomWords[randomIndex];
+            if (currentMode == "random") {
+                randomIndex = Math.floor(Math.random()*randomWords.length);
+                selectedWord = randomWords[randomIndex];
+            }
 
 
             if (currentMode == 'custom') {
@@ -174,6 +181,7 @@ resetButton.addEventListener('click', function () {
     noOfWordsSpan.textContent = noOfWords.toString();
     noOfLettersSpan.textContent = noOfLetters.toString();
     timeElapsedSpan.textContent = (timeElapsed/1000).toString() + "s";
+    speechSynthesis.cancel();
 });
 
 async function loadWords () {
