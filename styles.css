@@ -103,3 +103,17 @@ div.right-align-div {
 label.voice-label {
     margin-left: 20px;
 }
+
+.submit-customtext-button-div {
+    text-align: right;
+    margin: 0;
+}
+
+.submit-custom-text-button-class {
+    margin-right: 0;
+}
+
+.randomise-custom-text-div-class {
+    text-align: right;
+    margin: 0;
+}

@@ -63,8 +63,13 @@
                     <input type="radio" name="mode-selector" id="custom-text-toggle" value="custom">
                 </div>
 
-                <div>
-                    <textarea id="custom-text-field" style="display: none;" class="textarea-class"></textarea>
+                <div style="display: none;" id="custom-text-div">
+                    <div class="randomise-custom-text-div-class">
+                        <label for="randomise-toggle-radio">Randomise ?</label>
+                        <input type="checkbox" name="randomise-toggle-radio" id="randomise-toggle-radio" class="speak-toggle-class">
+                        <button id="submit-custom-text-button" class="submit-custom-text-button-class">Submit the text</button>
+                    </div>
+                    <textarea id="custom-text-field" class="textarea-class"></textarea>
                 </div>
             </div>
 
