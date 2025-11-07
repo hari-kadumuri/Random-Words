@@ -60,8 +60,6 @@ function populateVoices() {
     });
 }
 
-
-
 randomWordsToggle.addEventListener('change', function() {
     if (this.checked) {
         currentMode = 'random';
