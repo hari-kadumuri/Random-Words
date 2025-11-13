@@ -117,7 +117,8 @@ function getCleanTimeText (timeInputInSeconds) {
 submitCustomTextButton.addEventListener('click', function () {
     let text = customTextField.value;
     customWords = [];
-    customWords = text.split(" ");
+    customWords = text.trim().split(/\s+/);
+    console.log("Custom Words are: " + customWords);
     customTextIndex = 0;
     playButton.textContent = 'Play';
     isPlaying = false;
