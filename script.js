@@ -39,6 +39,8 @@ let ifSpeak = true;
 let voices = [];
 let customTextIndex = 0;
 
+const specialCharacters = ['.', ',', ':', ';', '-', '?'];
+
 speechSynthesis.onvoiceschanged = populateVoices;
 
 (async () => {
@@ -117,17 +119,52 @@ function getCleanTimeText (timeInputInSeconds) {
 function refineWords(customWords) {
     for (let index = 0; index < customWords.length; index++) {
         const element = customWords[index];
-        
+        var lastCharacter = element.slice(-1);
+        console.log ("\nIndex at " + index + ": element is " + element + " and last character is " + lastCharacter);
+        if (specialCharacters.includes(lastCharacter)) {
+            var spellWord = "Fullstop";
+            switch (lastCharacter) {
+                case '.':
+                    spellWord = 'Fullstop';
+                    break;
+                case ',':
+                    spellWord = 'Comma';
+                    break;
+                case ':':
+                    spellWord = 'colon';
+                    break;
+                case ';':
+                    spellWord = 'semicolon';
+                    break;
+                case '-':
+                    spellWord = 'hifen';
+                    break;
+                case '?':
+                    spellWord = 'question-mark';
+                    break;
+            }
+            console.log("\nspell word selected is: " + spellWord);
+            if (element.length > 1) {
+                customWords[index] = element.slice(0, -1);
+                customWords.splice(index+1, 0, spellWord);
+            }
+            else {
+                customWords[index] = spellWord;
+            }
+            index++;
+        }
     }
-    return customWords;
 }
 
 submitCustomTextButton.addEventListener('click', function () {
     let text = customTextField.value;
     customWords = [];
     customWords = text.trim().split(/\s+/);
-    customWords = refineWords(customWords);
-    console.log("Custom Words are: " + customWords);
+    refineWords(customWords);
+    console.log("\nCustom Words are: ");
+    customWords.forEach(element => {
+        console.log("\n" + element);
+    });
     customTextIndex = 0;
     playButton.textContent = 'Play';
     isPlaying = false;
