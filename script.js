@@ -39,7 +39,7 @@ let ifSpeak = true;
 let voices = [];
 let customTextIndex = 0;
 
-const specialCharacters = ['.', ',', ':', ';', '-', '?', '/', '\\', '>', '<', '=', '%', '#', '"', '\'', '(', ')'];
+const specialCharacters = ['.', ',', ':', ';', '-', '?', '/', '\\', '>', '<', '=', '%', '#', '"', '\'', '(', ')', '$', '~', '+', '&', '@', '!', '^', '*', '[', ']', '{', '}', '|', '_', '\u2014', '\u201C', '\u201D', '\n'];
 
 function getSpellWord(character) {
     var spellWord = 'fullstop';
@@ -94,6 +94,60 @@ function getSpellWord(character) {
             break;
         case ')':
             spellWord = 'closed-bracket';
+            break;
+        case '$':
+            spellWord = 'dollar-symbol';
+            break;
+        case '~':
+            spellWord = 'tilde';
+            break;
+        case '+':
+            spellWord = 'plus';
+            break;
+        case '&':
+            spellWord = 'and';
+            break;
+        case '@':
+            spellWord = 'at-symbol';
+            break;
+        case '!':
+            spellWord = 'exclamation-mark';
+            break;
+        case '^':
+            spellWord = 'caret-symbol';
+            break;
+        case '*':
+            spellWord = 'star-symbol';
+            break;
+        case '[':
+            spellWord = 'open-square-bracket';
+            break;
+        case ']':
+            spellWord = 'closed-square-bracket';
+            break;
+        case '{':
+            spellWord = 'open-flower-bracket';
+            break;
+        case '}':
+            spellWord = 'closed-flower-bracket';
+            break;
+        case '|':
+            spellWord = 'vertical-bar';
+            break;
+        case '_':
+            spellWord = 'underscore';
+            break;
+        case '\u2014':
+            spellWord = 'em-dash';
+            break;
+        case '\u201C':
+            spellWord = 'opening-double-quote';
+            break;
+        case '\u201D':
+            spellWord = 'closing-double-quote';
+            break;
+        case '\n':
+            spellWord = 'new-line';
             break;
     }
     return spellWord;
@@ -174,7 +228,7 @@ function getCleanTimeText (timeInputInSeconds) {
     return retString;
 }
 
-function refineWords(customWords) {
+function refineWordsOld(customWords) {
     for (let index = 0; index < customWords.length; index++) {
         var element = customWords[index];
         var firstCharacter = element[0];
@@ -197,22 +251,37 @@ function refineWords(customWords) {
     }
 }
 
+function refineWords (text) {
+    customWords = [];
+    var currentWord = "";
+    for (let idx = 0; idx < text.length; idx++) {
+        const element = text[idx];
+        if (element == ' ') {
+            if (currentWord.length > 0) customWords.push(currentWord);
+            currentWord = '';
+        }
+        else if (specialCharacters.includes(element)) {
+            if (currentWord.length > 0) customWords.push(currentWord);
+            customWords.push(element);
+            currentWord = '';
+        }
+        else currentWord = currentWord + element;
+    }
+    if (currentWord.length > 0) customWords.push(currentWord);
+}
+
 submitCustomTextButton.addEventListener('click', function () {
     let text = customTextField.value;
-    customWords = [];
-    customWords = text.trim().split(/\s+/);
-    refineWords(customWords);
+    refineWords(text);
     customTextIndex = 0;
     playButton.textContent = 'Play';
     isPlaying = false;
 });
 
-customTextField.addEventListener("input", autoResizeTextArea);
-
-function autoResizeTextArea() {
+customTextField.addEventListener("input", function () {
     this.style.height = "auto";
     this.style.height = this.scrollHeight + "px";
-}
+});
 
 playButton.addEventListener('click', async function () {
     isPlaying = !isPlaying;
