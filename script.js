@@ -39,7 +39,7 @@ let ifSpeak = true;
 let voices = [];
 let customTextIndex = 0;
 
-const specialCharacters = ['.', ',', ':', ';', '-', '?'];
+const specialCharacters = ['.', ',', ':', ';', '-', '?', '/', '\\', '>', '<', '=', '%', '#'];
 
 speechSynthesis.onvoiceschanged = populateVoices;
 
@@ -116,34 +116,58 @@ function getCleanTimeText (timeInputInSeconds) {
     return retString;
 }
 
+function getSpellWord(character) {
+    var spellWord = 'fullstop';
+    switch (character) {
+        case '.':
+            spellWord = 'fullstop';
+            break;
+        case ',':
+            spellWord = 'Comma';
+            break;
+        case ':':
+            spellWord = 'colon';
+            break;
+        case ';':
+            spellWord = 'semicolon';
+            break;
+        case '-':
+            spellWord = 'hifen';
+            break;
+        case '?':
+            spellWord = 'question-mark';
+            break;
+        case '/':
+            spellWord = 'forward-slash';
+            break;
+        case '\\':
+            spellWord = 'backward-slash';
+            break;
+        case '>':
+            spellWord = 'greater-than';
+            break;
+        case '<':
+            spellWord = 'less-than';
+            break;
+        case '=':
+            spellWord = "equals-to";
+            break;
+        case '%':
+            spellWord = 'percentage';
+            break;
+        case '#':
+            spellWord = 'hash-tag';
+            break;
+    }
+    return spellWord;
+}
+
 function refineWords(customWords) {
     for (let index = 0; index < customWords.length; index++) {
         const element = customWords[index];
         var lastCharacter = element.slice(-1);
-        console.log ("\nIndex at " + index + ": element is " + element + " and last character is " + lastCharacter);
+        var spellWord = getSpellWord(lastCharacter);
         if (specialCharacters.includes(lastCharacter)) {
-            var spellWord = "Fullstop";
-            switch (lastCharacter) {
-                case '.':
-                    spellWord = 'Fullstop';
-                    break;
-                case ',':
-                    spellWord = 'Comma';
-                    break;
-                case ':':
-                    spellWord = 'colon';
-                    break;
-                case ';':
-                    spellWord = 'semicolon';
-                    break;
-                case '-':
-                    spellWord = 'hifen';
-                    break;
-                case '?':
-                    spellWord = 'question-mark';
-                    break;
-            }
-            console.log("\nspell word selected is: " + spellWord);
             if (element.length > 1) {
                 customWords[index] = element.slice(0, -1);
                 customWords.splice(index+1, 0, spellWord);
@@ -161,10 +185,6 @@ submitCustomTextButton.addEventListener('click', function () {
     customWords = [];
     customWords = text.trim().split(/\s+/);
     refineWords(customWords);
-    console.log("\nCustom Words are: ");
-    customWords.forEach(element => {
-        console.log("\n" + element);
-    });
     customTextIndex = 0;
     playButton.textContent = 'Play';
     isPlaying = false;
@@ -214,8 +234,6 @@ playButton.addEventListener('click', async function () {
             }
 
             if (selectedWord.length > 0) {
-                selectedWord = selectedWord.charAt(0).toUpperCase() + selectedWord.slice(1);
-                
                 noOfWords += 1;
                 noOfLetters += selectedWord.length;
                 timeElapsed += timePeriod;
