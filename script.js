@@ -114,10 +114,19 @@ function getCleanTimeText (timeInputInSeconds) {
     return retString;
 }
 
+function refineWords(customWords) {
+    for (let index = 0; index < customWords.length; index++) {
+        const element = customWords[index];
+        
+    }
+    return customWords;
+}
+
 submitCustomTextButton.addEventListener('click', function () {
     let text = customTextField.value;
     customWords = [];
     customWords = text.trim().split(/\s+/);
+    customWords = refineWords(customWords);
     console.log("Custom Words are: " + customWords);
     customTextIndex = 0;
     playButton.textContent = 'Play';
