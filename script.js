@@ -190,6 +190,13 @@ submitCustomTextButton.addEventListener('click', function () {
     isPlaying = false;
 });
 
+customTextField.addEventListener("input", autoResizeTextArea);
+
+function autoResizeTextArea() {
+    this.style.height = "auto";
+    this.style.height = this.scrollHeight + "px";
+}
+
 playButton.addEventListener('click', async function () {
     isPlaying = !isPlaying;
     playButton.textContent = (isPlaying ? 'Pause' : (noOfWords > 0 ? 'Resume' : 'Play'));
@@ -260,7 +267,7 @@ resetButton.addEventListener('click', function () {
     timeElapsed = 0;
     avgWPM = 0;
     avgLPM = 0;
-    selectedWord = "Hello!!";
+    selectedWord = "Hello!";
     timeElapsed = 0;
     customTextIndex = 0;
 
