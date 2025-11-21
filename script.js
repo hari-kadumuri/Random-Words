@@ -166,14 +166,13 @@ function refineWords(customWords) {
     for (let index = 0; index < customWords.length; index++) {
         const element = customWords[index];
         var lastCharacter = element.slice(-1);
-        var spellWord = getSpellWord(lastCharacter);
         if (specialCharacters.includes(lastCharacter)) {
             if (element.length > 1) {
                 customWords[index] = element.slice(0, -1);
-                customWords.splice(index+1, 0, spellWord);
+                customWords.splice(index+1, 0, lastCharacter);
             }
             else {
-                customWords[index] = spellWord;
+                customWords[index] = lastCharacter;
             }
             index++;
         }
@@ -239,13 +238,17 @@ playButton.addEventListener('click', async function () {
                     customTextIndex++;
                 }
             }
-
             if (selectedWord.length > 0) {
-                noOfWords += 1;
-                noOfLetters += selectedWord.length;
-                timeElapsed += timePeriod;
-                avgWPM = noOfWords*1000*60/timeElapsed;
-                avgLPM = noOfLetters*1000*60/timeElapsed;
+                if (!specialCharacters.includes(selectedWord)) {
+                    noOfWords += 1;
+                    noOfLetters += selectedWord.length;
+                    timeElapsed += timePeriod;
+                    avgWPM = noOfWords*1000*60/timeElapsed;
+                    avgLPM = noOfLetters*1000*60/timeElapsed;
+                }
+                else {
+                    selectedWord = getSpellWord(selectedWord);
+                }
                 
                 avgWPMSpan.textContent = avgWPM.toFixed(2).toString();
                 avgLPMSpan.textContent = avgLPM.toFixed(2).toString();
