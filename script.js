@@ -39,7 +39,65 @@ let ifSpeak = true;
 let voices = [];
 let customTextIndex = 0;
 
-const specialCharacters = ['.', ',', ':', ';', '-', '?', '/', '\\', '>', '<', '=', '%', '#'];
+const specialCharacters = ['.', ',', ':', ';', '-', '?', '/', '\\', '>', '<', '=', '%', '#', '"', '\'', '(', ')'];
+
+function getSpellWord(character) {
+    var spellWord = 'fullstop';
+    switch (character) {
+        case '.':
+            spellWord = 'fullstop';
+            break;
+        case ',':
+            spellWord = 'Comma';
+            break;
+        case ':':
+            spellWord = 'colon';
+            break;
+        case ';':
+            spellWord = 'semicolon';
+            break;
+        case '-':
+            spellWord = 'hifen';
+            break;
+        case '?':
+            spellWord = 'question-mark';
+            break;
+        case '/':
+            spellWord = 'forward-slash';
+            break;
+        case '\\':
+            spellWord = 'backward-slash';
+            break;
+        case '>':
+            spellWord = 'greater-than';
+            break;
+        case '<':
+            spellWord = 'less-than';
+            break;
+        case '=':
+            spellWord = "equals-to";
+            break;
+        case '%':
+            spellWord = 'percentage';
+            break;
+        case '#':
+            spellWord = 'hash-tag';
+            break;
+        case '"':
+            spellWord = 'double-quote';
+            break;
+        case '\'':
+            spellWord = 'single-quote';
+            break;
+        case '(':
+            spellWord = 'open-bracket';
+            break;
+        case ')':
+            spellWord = 'closed-bracket';
+            break;
+    }
+    return spellWord;
+}
 
 speechSynthesis.onvoiceschanged = populateVoices;
 
@@ -116,65 +174,25 @@ function getCleanTimeText (timeInputInSeconds) {
     return retString;
 }
 
-function getSpellWord(character) {
-    var spellWord = 'fullstop';
-    switch (character) {
-        case '.':
-            spellWord = 'fullstop';
-            break;
-        case ',':
-            spellWord = 'Comma';
-            break;
-        case ':':
-            spellWord = 'colon';
-            break;
-        case ';':
-            spellWord = 'semicolon';
-            break;
-        case '-':
-            spellWord = 'hifen';
-            break;
-        case '?':
-            spellWord = 'question-mark';
-            break;
-        case '/':
-            spellWord = 'forward-slash';
-            break;
-        case '\\':
-            spellWord = 'backward-slash';
-            break;
-        case '>':
-            spellWord = 'greater-than';
-            break;
-        case '<':
-            spellWord = 'less-than';
-            break;
-        case '=':
-            spellWord = "equals-to";
-            break;
-        case '%':
-            spellWord = 'percentage';
-            break;
-        case '#':
-            spellWord = 'hash-tag';
-            break;
-    }
-    return spellWord;
-}
-
 function refineWords(customWords) {
     for (let index = 0; index < customWords.length; index++) {
-        const element = customWords[index];
+        var element = customWords[index];
+        var firstCharacter = element[0];
         var lastCharacter = element.slice(-1);
-        if (specialCharacters.includes(lastCharacter)) {
-            if (element.length > 1) {
+        if (element.length > 1) {
+            if (specialCharacters.includes(firstCharacter)) {
+                customWords[index] = firstCharacter;
+                customWords.splice(++index, 0, element.slice(1));
+                element = customWords[index];
+            }
+            if (specialCharacters.includes(lastCharacter)) {
                 customWords[index] = element.slice(0, -1);
                 customWords.splice(index+1, 0, lastCharacter);
+                index++;
             }
-            else {
-                customWords[index] = lastCharacter;
-            }
-            index++;
+        }
+        else {
+            customWords[index] = lastCharacter;
         }
     }
 }
