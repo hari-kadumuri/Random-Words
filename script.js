@@ -39,7 +39,7 @@ let ifSpeak = true;
 let voices = [];
 let customTextIndex = 0;
 
-const specialCharacters = ['.', ',', ':', ';', '-', '?', '/', '\\', '>', '<', '=', '%', '#', '"', '\'', '(', ')', '$', '~', '+', '&', '@', '!', '^', '*', '[', ']', '{', '}', '|', '_', '\u2014', '\u201C', '\u201D', '\n'];
+const specialCharacters = ['.', ',', ':', ';', '-', '?', '/', '\\', '>', '<', '=', '%', '#', '"', '\'', '(', ')', '$', '~', '+', '&', '@', '!', '^', '*', '[', ']', '{', '}', '|', '_', '\u2013', '\u2014', '\u201C', '\u201D', '\n'];
 
 function getSpellWord(character) {
     var spellWord = 'fullstop';
@@ -136,6 +136,9 @@ function getSpellWord(character) {
             break;
         case '_':
             spellWord = 'underscore';
+            break;
+        case '\u2013':
+            spellWord = 'en-dash';
             break;
         case '\u2014':
             spellWord = 'em-dash';
