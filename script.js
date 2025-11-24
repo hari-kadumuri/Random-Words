@@ -28,8 +28,6 @@ const currentWordDiv = document.getElementById('current-word-div');
 let randomWords = [];
 let customWords = [];
 let currentMode = 'random';
-let isPlaying = false;
-let ifRandomise = false;
 let noOfWords = 0;
 let noOfLetters = 0;
 let avgWPM = 0;
@@ -37,15 +35,23 @@ let avgLPM = 0;
 let timeElapsed = 0;
 let timePeriod = 3000;
 let currentSpeed = 20;
-let ifSpeak = true;
 let voices = [];
 let customTextIndex = 0;
 
+let isPlaying = false;
+let ifRandomise = false;
+let ifSpeak = true;
+let ifRestart = false;
+
 const specialCharacters = ['.', ',', ':', ';', '-', '?', '/', '\\', '>', '<', '=', '%', '#', '"', '\'', '(', ')', '$', '~', '+', '&', '@', '!', '^', '*', '[', ']', '{', '}', '|', '_', '\u2013', '\u2014', '\u201C', '\u201D', '\n'];
 
-function getSpellWord(character) {
-    var spellWord = 'fullstop';
-    switch (character) {
+function ifSpecialCharacter (inputWord) {
+    return specialCharacters.includes(inputWord);
+}
+
+function getSpellWord(inputWord) {
+    var spellWord = inputWord;
+    switch (inputWord) {
         case '.':
             spellWord = 'fullstop';
             break;
@@ -246,7 +252,7 @@ function refineWords (text) {
             if (currentWord.length > 0) customWords.push(currentWord);
             currentWord = '';
         }
-        else if (specialCharacters.includes(element)) {
+        else if (ifSpecialCharacter(element)) {
             if (currentWord.length > 0) customWords.push(currentWord);
             customWords.push(element);
             currentWord = '';
@@ -257,13 +263,16 @@ function refineWords (text) {
 }
 
 submitCustomTextButton.addEventListener('click', function () {
-    let text = customTextField.value;
-    refineWords(text);
     customTextIndex = 0;
     playButton.textContent = 'Play';
     isPlaying = false;
-    previousButton.disabled = (customTextIndex > 0 ? false : true);
-    nextButton.disabled = (customTextIndex < customWords.length-1 ? false : true);
+    let text = customTextField.value;
+    if (text.length == 0) {
+        alert('Pls submit non-empty text!');
+        return;
+    }
+    refineWords(text);
+    updateScrollingButtonsStatus();
 });
 
 customTextField.addEventListener("input", function () {
@@ -271,20 +280,24 @@ customTextField.addEventListener("input", function () {
     this.style.height = this.scrollHeight + "px";
 });
 
+function updateScrollingButtonsStatus () {
+    previousButton.disabled = (customTextIndex > 0 ? false : true);
+    nextButton.disabled = (customTextIndex < customWords.length-1 ? false : true);
+}
+
 previousButton.addEventListener('click', function () {
     isPlaying = false;
-    if (customTextIndex > 1) {
-        customTextDiv-=2;
+    if (customTextIndex > 0) {
+        customTextIndex -= 1;
         previousButton.disabled = false;
     }
     if (customTextIndex == 0) {
         previousButton.disabled = true;
     }
-    previousButton.disabled = (customTextIndex > 0 ? false : true);
-    nextButton.disabled = (customTextIndex < customWords.length-1 ? false : true);
+    updateScrollingButtonsStatus();
     var selectedWord = customWords[customTextIndex];
     playButton.textContent = (noOfWords > 0 ? 'Resume' : 'Play');
-    currentWordDiv.textContent = (specialCharacters.includes(selectedWord) ? getSpellWord(selectedWord) : selectedWord);
+    currentWordDiv.textContent = getSpellWord(selectedWord);
 });
 
 nextButton.addEventListener('click', function () {
@@ -296,18 +309,19 @@ nextButton.addEventListener('click', function () {
     if (customTextIndex == customWords.length) {
         nextButton.disabled = true;
     }
-    previousButton.disabled = (customTextIndex > 0 ? false : true);
-    nextButton.disabled = (customTextIndex < customWords.length-1 ? false : true);
+    updateScrollingButtonsStatus();
     var selectedWord = customWords[customTextIndex];
     playButton.textContent = (noOfWords > 0 ? 'Resume' : 'Play');
-    currentWordDiv.textContent = (specialCharacters.includes(selectedWord) ? getSpellWord(selectedWord) : selectedWord);
+    currentWordDiv.textContent = getSpellWord(selectedWord);
 });
 
 playButton.addEventListener('click', async function () {
     isPlaying = !isPlaying;
+    if (playButton.textContent == 'Restart') {
+        customTextIndex = 0;
+    }
     playButton.textContent = (isPlaying ? 'Pause' : (noOfWords > 0 ? 'Resume' : 'Play'));
-    previousButton.disabled = (customTextIndex > 0 ? false : true);
-    nextButton.disabled = (customTextIndex < customWords.length-1 ? false : true);
+    updateScrollingButtonsStatus();
     
     while (isPlaying) {
         previousButton.disabled = (customTextIndex > 0 ? false : true);
@@ -317,60 +331,58 @@ playButton.addEventListener('click', async function () {
             playButton.textContent = 'Play';
             alert("Please submit custom text!");
         }
-        await new Promise(resolve => setTimeout(resolve, timePeriod));
-        if (isPlaying) {
-            timePeriod = 60*1000/currentSpeed;
 
-            let selectedWord = "";
-            
-            if (currentMode == "random") {
-                let index = Math.floor(Math.random()*randomWords.length);
-                selectedWord = randomWords[index];
+        timePeriod = 60*1000/currentSpeed;
+        let selectedWord = "";
+
+        if (currentMode == "random") {
+            let index = Math.floor(Math.random()*randomWords.length);
+            selectedWord = randomWords[index];
+        }
+
+        if (currentMode == 'custom' && customWords.length != 0) {
+            if (ifRandomise) {
+                let index = Math.floor(Math.random()*customWords.length);
+                selectedWord = customWords[index];
             }
-
-            if (currentMode == 'custom' && customWords.length != 0) {
-                if (ifRandomise) {
-                    let index = Math.floor(Math.random()*customWords.length);
-                    selectedWord = customWords[index];
+            else {
+                if (customTextIndex == customWords.length) {
+                    isPlaying = false;
+                    alert("Custom Text completed.");
+                    playButton.textContent = 'Restart';
+                    customTextIndex--;
+                    currentWordDiv.textContent = getSpellWord(customWords[customTextIndex]);
+                    updateScrollingButtonsStatus();
+                    break;
                 }
                 else {
-                    if (customTextIndex == customWords.length) {
-                        isPlaying = false;
-                        alert("Custom Text completed.");
-                        playButton.textContent = 'Restart';
-                    }
-                    else if (customTextIndex > customWords.length) {
-                        customTextIndex = 0;
-                        selectedWord = customWords[customTextIndex];
-                    }
-                    else {
-                        selectedWord = customWords[customTextIndex];
-                    }
-                    customTextIndex++;
+                    selectedWord = customWords[customTextIndex];
                 }
-            }
-            if (selectedWord.length > 0) {
-                if (!specialCharacters.includes(selectedWord)) {
-                    noOfWords += 1;
-                    noOfLetters += selectedWord.length;
-                    timeElapsed += timePeriod;
-                    avgWPM = noOfWords*1000*60/timeElapsed;
-                    avgLPM = noOfLetters*1000*60/timeElapsed;
-                }
-                else {
-                    selectedWord = getSpellWord(selectedWord);
-                }
-                
-                avgWPMSpan.textContent = avgWPM.toFixed(2).toString();
-                avgLPMSpan.textContent = avgLPM.toFixed(2).toString();
-                currentWordDiv.textContent = selectedWord;
-                noOfWordsSpan.textContent = noOfWords.toString();
-                noOfLettersSpan.textContent = noOfLetters.toString();
-                timeElapsedSpan.textContent = getCleanTimeText(timeElapsed/1000);
-                
-                if (ifSpeak) speakWord(selectedWord);
+                customTextIndex++;
             }
         }
+        if (selectedWord.length > 0) {
+            if (!ifSpecialCharacter(selectedWord)) {
+                noOfWords += 1;
+                noOfLetters += selectedWord.length;
+                timeElapsed += timePeriod;
+                avgWPM = noOfWords*1000*60/timeElapsed;
+                avgLPM = noOfLetters*1000*60/timeElapsed;
+            }
+            else {
+                selectedWord = getSpellWord(selectedWord);
+            }
+            
+            avgWPMSpan.textContent = avgWPM.toFixed(2).toString();
+            avgLPMSpan.textContent = avgLPM.toFixed(2).toString();
+            currentWordDiv.textContent = selectedWord;
+            noOfWordsSpan.textContent = noOfWords.toString();
+            noOfLettersSpan.textContent = noOfLetters.toString();
+            timeElapsedSpan.textContent = getCleanTimeText(timeElapsed/1000);
+            
+            if (ifSpeak) speakWord(selectedWord);
+        }
+        await new Promise(resolve => setTimeout(resolve, timePeriod));
     }
 });
 
@@ -385,8 +397,7 @@ resetButton.addEventListener('click', function () {
     timeElapsed = 0;
     customTextIndex = 0;
 
-    previousButton.disabled = (customTextIndex > 0 ? false : true);
-    nextButton.disabled = (customTextIndex < customWords.length-1 ? false : true);
+    updateScrollingButtonsStatus();
 
     playButton.textContent = 'Play';
     avgWPMSpan.textContent = avgWPM.toString();

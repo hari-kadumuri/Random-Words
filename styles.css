@@ -117,3 +117,7 @@ label.voice-label {
     text-align: right;
     margin: 0;
 }
+
+.scroll-buttons {
+    display: none;
+}
