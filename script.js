@@ -8,8 +8,10 @@ const randomiseToggle = document.getElementById('randomise-toggle-radio');
 
 const randomWordsDisplay = document.getElementById('current-word');
 
+const previousButton = document.getElementById('previous-button');
 const playButton = document.getElementById('play-button');
 const resetButton = document.getElementById('reset-button');
+const nextButton = document.getElementById('next-button');
 
 const speedDropDown = document.getElementById('speed-drop-down');
 const customSpeedInput = document.getElementById('custom-speed-input');
@@ -191,6 +193,8 @@ customTextToggle.addEventListener('change', function () {
         currentMode = 'custom';
         isPlaying = true;
         customTextDiv.style.display = 'block';
+        previousButton.style.display = (currentMode == 'custom' && !ifRandomise ? 'inline-block' : 'none');
+        nextButton.style.display = (currentMode == 'custom' && !ifRandomise ? 'inline-block' : 'none');
         playButton.click();
     }
 });
@@ -201,6 +205,8 @@ speakerToggle.addEventListener('change', function () {
 
 randomiseToggle.addEventListener('change', function () {
     ifRandomise = this.checked;
+    previousButton.style.display = (currentMode == 'custom' && !ifRandomise ? 'inline-block' : 'none');
+    nextButton.style.display = (currentMode == 'custom' && !ifRandomise ? 'inline-block' : 'none');
 });
 
 speedDropDown.addEventListener('change', function() {
@@ -231,29 +237,6 @@ function getCleanTimeText (timeInputInSeconds) {
     return retString;
 }
 
-function refineWordsOld(customWords) {
-    for (let index = 0; index < customWords.length; index++) {
-        var element = customWords[index];
-        var firstCharacter = element[0];
-        var lastCharacter = element.slice(-1);
-        if (element.length > 1) {
-            if (specialCharacters.includes(firstCharacter)) {
-                customWords[index] = firstCharacter;
-                customWords.splice(++index, 0, element.slice(1));
-                element = customWords[index];
-            }
-            if (specialCharacters.includes(lastCharacter)) {
-                customWords[index] = element.slice(0, -1);
-                customWords.splice(index+1, 0, lastCharacter);
-                index++;
-            }
-        }
-        else {
-            customWords[index] = lastCharacter;
-        }
-    }
-}
-
 function refineWords (text) {
     customWords = [];
     var currentWord = "";
@@ -279,6 +262,8 @@ submitCustomTextButton.addEventListener('click', function () {
     customTextIndex = 0;
     playButton.textContent = 'Play';
     isPlaying = false;
+    previousButton.disabled = (customTextIndex > 0 ? false : true);
+    nextButton.disabled = (customTextIndex < customWords.length-1 ? false : true);
 });
 
 customTextField.addEventListener("input", function () {
@@ -286,11 +271,47 @@ customTextField.addEventListener("input", function () {
     this.style.height = this.scrollHeight + "px";
 });
 
+previousButton.addEventListener('click', function () {
+    isPlaying = false;
+    if (customTextIndex > 1) {
+        customTextDiv-=2;
+        previousButton.disabled = false;
+    }
+    if (customTextIndex == 0) {
+        previousButton.disabled = true;
+    }
+    previousButton.disabled = (customTextIndex > 0 ? false : true);
+    nextButton.disabled = (customTextIndex < customWords.length-1 ? false : true);
+    var selectedWord = customWords[customTextIndex];
+    playButton.textContent = (noOfWords > 0 ? 'Resume' : 'Play');
+    currentWordDiv.textContent = (specialCharacters.includes(selectedWord) ? getSpellWord(selectedWord) : selectedWord);
+});
+
+nextButton.addEventListener('click', function () {
+    isPlaying = false;
+    if (customTextIndex < customWords.length-1) {
+        customTextIndex++;
+        nextButton.disabled = false;
+    }
+    if (customTextIndex == customWords.length) {
+        nextButton.disabled = true;
+    }
+    previousButton.disabled = (customTextIndex > 0 ? false : true);
+    nextButton.disabled = (customTextIndex < customWords.length-1 ? false : true);
+    var selectedWord = customWords[customTextIndex];
+    playButton.textContent = (noOfWords > 0 ? 'Resume' : 'Play');
+    currentWordDiv.textContent = (specialCharacters.includes(selectedWord) ? getSpellWord(selectedWord) : selectedWord);
+});
+
 playButton.addEventListener('click', async function () {
     isPlaying = !isPlaying;
     playButton.textContent = (isPlaying ? 'Pause' : (noOfWords > 0 ? 'Resume' : 'Play'));
+    previousButton.disabled = (customTextIndex > 0 ? false : true);
+    nextButton.disabled = (customTextIndex < customWords.length-1 ? false : true);
     
     while (isPlaying) {
+        previousButton.disabled = (customTextIndex > 0 ? false : true);
+        nextButton.disabled = (customTextIndex < customWords.length-1 ? false : true);
         if (currentMode == 'custom' && customWords.length == 0) {
             isPlaying = false;
             playButton.textContent = 'Play';
@@ -363,6 +384,9 @@ resetButton.addEventListener('click', function () {
     selectedWord = "Hello!";
     timeElapsed = 0;
     customTextIndex = 0;
+
+    previousButton.disabled = (customTextIndex > 0 ? false : true);
+    nextButton.disabled = (customTextIndex < customWords.length-1 ? false : true);
 
     playButton.textContent = 'Play';
     avgWPMSpan.textContent = avgWPM.toString();
