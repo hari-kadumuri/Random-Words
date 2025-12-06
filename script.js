@@ -20,6 +20,7 @@ const submitCustomTextButton = document.getElementById('submit-custom-text-butto
 
 const avgWPMSpan = document.getElementById('avg-wpm-span');
 const avgLPMSpan = document.getElementById('avg-lpm-span');
+const instLPMSpan = document.getElementById('inst-lpm-span');
 const noOfWordsSpan = document.getElementById('no-of-words-span');
 const noOfLettersSpan = document.getElementById('no-of-letters-span');
 const timeElapsedSpan = document.getElementById('time-elapsed-span');
@@ -32,6 +33,7 @@ let noOfWords = 0;
 let noOfLetters = 0;
 let avgWPM = 0;
 let avgLPM = 0;
+let instLPM = 0;
 let timeElapsed = 0;
 let timePeriod = 3000;
 let currentSpeed = 20;
@@ -56,7 +58,6 @@ function fillSpeedDropDown () {
         if (currentSpeed == defaultSpeed) {
             option.selected = true;
         }
-        console.log("\nPushing " + option.value + " into the dropdown");
         speedDropDown.appendChild(option);
 
         if (currentSpeed == maxSpeed) {
@@ -64,7 +65,6 @@ function fillSpeedDropDown () {
             customOption.value = 'Custom';
             customOption.textContent = 'Custom';
             speedDropDown.appendChild(customOption);
-            console.log("\nPushing " + customOption.value + " into the dropdown");
         }
     }
 }
@@ -242,7 +242,6 @@ randomiseToggle.addEventListener('change', function () {
 });
 
 speedDropDown.addEventListener('change', function() {
-    console.log('\nSelected ' + this.value);
     if (this.value === 'Custom') {
         customSpeedInput.style.display = 'inline-block';
         customSpeedInput.focus();
@@ -395,6 +394,7 @@ playButton.addEventListener('click', async function () {
                 timeElapsed += timePeriod;
                 avgWPM = noOfWords*1000*60/timeElapsed;
                 avgLPM = noOfLetters*1000*60/timeElapsed;
+                instLPM = selectedWord.length*1000*60/timePeriod;
             }
             else {
                 selectedWord = getSpellWord(selectedWord);
@@ -402,6 +402,7 @@ playButton.addEventListener('click', async function () {
             
             avgWPMSpan.textContent = avgWPM.toFixed(2).toString();
             avgLPMSpan.textContent = avgLPM.toFixed(2).toString();
+            instLPMSpan.textContent = instLPM.toFixed(2).toString();
             currentWordDiv.textContent = selectedWord;
             noOfWordsSpan.textContent = noOfWords.toString();
             noOfLettersSpan.textContent = noOfLetters.toString();
@@ -420,6 +421,7 @@ resetButton.addEventListener('click', function () {
     timeElapsed = 0;
     avgWPM = 0;
     avgLPM = 0;
+    instLPM = 0;
     selectedWord = "Hello!";
     timeElapsed = 0;
     customTextIndex = 0;
@@ -429,6 +431,7 @@ resetButton.addEventListener('click', function () {
     playButton.textContent = 'Play';
     avgWPMSpan.textContent = avgWPM.toString();
     avgLPMSpan.textContent = avgLPM.toString();
+    instLPMSpan.textContent = instLPM.toString();
     currentWordDiv.textContent = selectedWord;
     noOfWordsSpan.textContent = noOfWords.toString();
     noOfLettersSpan.textContent = noOfLetters.toString();
