@@ -44,6 +44,32 @@ let ifSpeak = true;
 let ifRestart = false;
 
 const specialCharacters = ['.', ',', ':', ';', '-', '?', '/', '\\', '>', '<', '=', '%', '#', '"', '\'', '(', ')', '$', '~', '+', '&', '@', '!', '^', '*', '[', ']', '{', '}', '|', '_', '\u2013', '\u2014', '\u201C', '\u201D', '\n'];
+const minSpeed = 15;
+const maxSpeed = 35;
+const defaultSpeed = 20;
+
+function fillSpeedDropDown () {
+    for (let currentSpeed = minSpeed; currentSpeed <= maxSpeed; currentSpeed++) {
+        const option = document.createElement("option");
+        option.value = currentSpeed;
+        option.textContent = currentSpeed + " WPM";
+        if (currentSpeed == defaultSpeed) {
+            option.selected = true;
+        }
+        console.log("\nPushing " + option.value + " into the dropdown");
+        speedDropDown.appendChild(option);
+
+        if (currentSpeed == maxSpeed) {
+            const customOption = document.createElement("option");
+            customOption.value = 'Custom';
+            customOption.textContent = 'Custom';
+            speedDropDown.appendChild(customOption);
+            console.log("\nPushing " + customOption.value + " into the dropdown");
+        }
+    }
+}
+
+fillSpeedDropDown();
 
 function ifSpecialCharacter (inputWord) {
     return specialCharacters.includes(inputWord);
@@ -216,7 +242,8 @@ randomiseToggle.addEventListener('change', function () {
 });
 
 speedDropDown.addEventListener('change', function() {
-    if (this.value === 'custom') {
+    console.log('\nSelected ' + this.value);
+    if (this.value === 'Custom') {
         customSpeedInput.style.display = 'inline-block';
         customSpeedInput.focus();
         customSpeedButton.style.display = 'inline-block';
