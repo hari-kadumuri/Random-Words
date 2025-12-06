@@ -39,6 +39,7 @@ let timePeriod = 3000;
 let currentSpeed = 20;
 let voices = [];
 let customTextIndex = 0;
+let displayIndex = 0;
 
 let isPlaying = false;
 let ifRandomise = false;
@@ -313,6 +314,7 @@ function updateScrollingButtonsStatus () {
 
 previousButton.addEventListener('click', function () {
     isPlaying = false;
+    customTextIndex = displayIndex;
     if (customTextIndex > 0) {
         customTextIndex -= 1;
         previousButton.disabled = false;
@@ -324,10 +326,12 @@ previousButton.addEventListener('click', function () {
     var selectedWord = customWords[customTextIndex];
     playButton.textContent = (noOfWords > 0 ? 'Resume' : 'Play');
     currentWordDiv.textContent = getSpellWord(selectedWord);
+    displayIndex = customTextIndex;
 });
 
 nextButton.addEventListener('click', function () {
     isPlaying = false;
+    customTextIndex = displayIndex;
     if (customTextIndex < customWords.length-1) {
         customTextIndex++;
         nextButton.disabled = false;
@@ -339,31 +343,33 @@ nextButton.addEventListener('click', function () {
     var selectedWord = customWords[customTextIndex];
     playButton.textContent = (noOfWords > 0 ? 'Resume' : 'Play');
     currentWordDiv.textContent = getSpellWord(selectedWord);
+    displayIndex = customTextIndex;
 });
 
 playButton.addEventListener('click', async function () {
     isPlaying = !isPlaying;
     if (playButton.textContent == 'Restart') {
         customTextIndex = 0;
+        displayIndex = 0;
     }
     playButton.textContent = (isPlaying ? 'Pause' : (noOfWords > 0 ? 'Resume' : 'Play'));
     updateScrollingButtonsStatus();
     
     while (isPlaying) {
-        previousButton.disabled = (customTextIndex > 0 ? false : true);
-        nextButton.disabled = (customTextIndex < customWords.length-1 ? false : true);
+        updateScrollingButtonsStatus();
+        
+        timePeriod = 60*1000/currentSpeed;
+        let selectedWord = "";
+        
+        if (currentMode == "random") {
+            let index = Math.floor(Math.random()*randomWords.length);
+            selectedWord = randomWords[index];
+        }
+
         if (currentMode == 'custom' && customWords.length == 0) {
             isPlaying = false;
             playButton.textContent = 'Play';
             alert("Please submit custom text!");
-        }
-
-        timePeriod = 60*1000/currentSpeed;
-        let selectedWord = "";
-
-        if (currentMode == "random") {
-            let index = Math.floor(Math.random()*randomWords.length);
-            selectedWord = randomWords[index];
         }
 
         if (currentMode == 'custom' && customWords.length != 0) {
@@ -378,11 +384,13 @@ playButton.addEventListener('click', async function () {
                     playButton.textContent = 'Restart';
                     customTextIndex--;
                     currentWordDiv.textContent = getSpellWord(customWords[customTextIndex]);
+                    displayIndex = customTextIndex;
                     updateScrollingButtonsStatus();
                     break;
                 }
                 else {
                     selectedWord = customWords[customTextIndex];
+                    displayIndex = customTextIndex;
                 }
                 customTextIndex++;
             }
@@ -425,14 +433,15 @@ resetButton.addEventListener('click', function () {
     selectedWord = "Hello!";
     timeElapsed = 0;
     customTextIndex = 0;
-
+    
     updateScrollingButtonsStatus();
-
+    
     playButton.textContent = 'Play';
     avgWPMSpan.textContent = avgWPM.toString();
     avgLPMSpan.textContent = avgLPM.toString();
     instLPMSpan.textContent = instLPM.toString();
     currentWordDiv.textContent = selectedWord;
+    displayIndex = 0;
     noOfWordsSpan.textContent = noOfWords.toString();
     noOfLettersSpan.textContent = noOfLetters.toString();
     timeElapsedSpan.textContent = (timeElapsed/1000).toString() + "s";
