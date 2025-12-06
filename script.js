@@ -5,6 +5,7 @@ const speakerToggle = document.getElementById('speaker-toggle-radio');
 const voiceDropDown = document.getElementById('voice-drop-down');
 const customTextDiv = document.getElementById('custom-text-div');
 const randomiseToggle = document.getElementById('randomise-toggle-radio');
+const lightModeToggle = document.getElementById('light-mode-toggle');
 
 const randomWordsDisplay = document.getElementById('current-word');
 
@@ -26,6 +27,7 @@ const noOfLettersSpan = document.getElementById('no-of-letters-span');
 const timeElapsedSpan = document.getElementById('time-elapsed-span');
 const currentWordDiv = document.getElementById('current-word-div');
 
+const SITE_THEME = 'SITE_THEME';
 let randomWords = [];
 let customWords = [];
 let currentMode = 'random';
@@ -51,6 +53,17 @@ const minSpeed = 15;
 const maxSpeed = 35;
 const defaultSpeed = 20;
 
+setTheme('dark');
+fillSpeedDropDown();
+speechSynthesis.onvoiceschanged = populateVoices;
+(async () => {
+    randomWords = await loadRandomWords();
+})();
+
+function setTheme (theme) {
+    document.documentElement.setAttribute(SITE_THEME, theme);
+}
+
 function fillSpeedDropDown () {
     for (let currentSpeed = minSpeed; currentSpeed <= maxSpeed; currentSpeed++) {
         const option = document.createElement("option");
@@ -70,7 +83,20 @@ function fillSpeedDropDown () {
     }
 }
 
-fillSpeedDropDown();
+function populateVoices() {
+    voices = speechSynthesis.getVoices();
+    voiceDropDown.innerHTML = "";
+
+    voices.forEach((voice, index) => {
+        if (voice.lang == 'en-US') {
+            const option = document.createElement("option");
+            option.value = index;
+            option.textContent = "Voice " + (index+1).toString();
+            if (voice.default) option.textContent += " — Default";
+            voiceDropDown.appendChild(option);
+        }
+    });
+}
 
 function ifSpecialCharacter (inputWord) {
     return specialCharacters.includes(inputWord);
@@ -191,26 +217,10 @@ function getSpellWord(inputWord) {
     return spellWord;
 }
 
-speechSynthesis.onvoiceschanged = populateVoices;
-
-(async () => {
-    randomWords = await loadWords();
-})();
-
-function populateVoices() {
-    voices = speechSynthesis.getVoices();
-    voiceDropDown.innerHTML = "";
-
-    voices.forEach((voice, index) => {
-        if (voice.lang == 'en-US') {
-            const option = document.createElement("option");
-            option.value = index;
-            option.textContent = "Voice " + (index+1).toString();
-            if (voice.default) option.textContent += " — Default";
-            voiceDropDown.appendChild(option);
-        }
-    });
-}
+lightModeToggle.addEventListener("change", function () {
+    var theme = (this.checked ? "light" : "dark");
+    setTheme(theme);
+});
 
 randomWordsToggle.addEventListener('change', function() {
     if (this.checked) {
@@ -448,7 +458,7 @@ resetButton.addEventListener('click', function () {
     speechSynthesis.cancel();
 });
 
-async function loadWords () {
+async function loadRandomWords () {
     const response = await fetch('words.txt');
     const text = await response.text();
     return text.split('\n').map(w => w.trim()).filter(Boolean);
