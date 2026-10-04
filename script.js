@@ -53,7 +53,7 @@ const minSpeed = 15;
 const maxSpeed = 35;
 const defaultSpeed = 20;
 
-setTheme('dark');
+setTheme('light'); // sets default webpage mode to light
 fillSpeedDropDown();
 speechSynthesis.onvoiceschanged = populateVoices;
 (async () => {
@@ -417,6 +417,9 @@ playButton.addEventListener('click', async function () {
             else {
                 selectedWord = getSpellWord(selectedWord);
             }
+
+            // word is spoken first before displayiing it to account for lag in speech
+            if (ifSpeak) speakWord(selectedWord);
             
             avgWPMSpan.textContent = avgWPM.toFixed(2).toString();
             avgLPMSpan.textContent = avgLPM.toFixed(2).toString();
@@ -425,8 +428,6 @@ playButton.addEventListener('click', async function () {
             noOfWordsSpan.textContent = noOfWords.toString();
             noOfLettersSpan.textContent = noOfLetters.toString();
             timeElapsedSpan.textContent = getCleanTimeText(timeElapsed/1000);
-            
-            if (ifSpeak) speakWord(selectedWord);
         }
         await new Promise(resolve => setTimeout(resolve, timePeriod));
     }
