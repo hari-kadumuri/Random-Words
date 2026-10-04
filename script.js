@@ -4,6 +4,8 @@ const customTextField = document.getElementById('custom-text-field');
 const speakerToggle = document.getElementById('speaker-toggle-radio');
 const voiceDropDown = document.getElementById('voice-drop-down');
 const customTextDiv = document.getElementById('custom-text-div');
+const customTextProgressDiv = document.getElementById('custom-text-progress-div');
+const customTextProgressSpan = document.getElementById('custom-text-progress-span');
 const randomiseToggle = document.getElementById('randomise-toggle-radio');
 const modeChangeButton = document.getElementById('mode-change-button');
 
@@ -229,6 +231,7 @@ randomWordsToggle.addEventListener('change', function() {
         currentMode = 'random';
         isPlaying = true;
         customTextDiv.style.display = 'none';
+        customTextProgressDiv.style.display = 'none';
         playButton.click();
     }
 });
@@ -238,6 +241,8 @@ customTextToggle.addEventListener('change', function () {
         currentMode = 'custom';
         isPlaying = true;
         customTextDiv.style.display = 'block';
+        if (!ifRandomise) customTextProgressDiv.style.display = 'block';
+        else customTextProgressDiv.style.display = 'none';
         previousButton.style.display = (currentMode == 'custom' && !ifRandomise ? 'inline-block' : 'none');
         nextButton.style.display = (currentMode == 'custom' && !ifRandomise ? 'inline-block' : 'none');
         playButton.click();
@@ -252,6 +257,8 @@ randomiseToggle.addEventListener('change', function () {
     ifRandomise = this.checked;
     previousButton.style.display = (currentMode == 'custom' && !ifRandomise ? 'inline-block' : 'none');
     nextButton.style.display = (currentMode == 'custom' && !ifRandomise ? 'inline-block' : 'none');
+    if (!ifRandomise) customTextProgressDiv.style.display = 'block';
+    else customTextProgressDiv.style.display = 'none';
 });
 
 speedDropDown.addEventListener('change', function() {
@@ -339,6 +346,7 @@ previousButton.addEventListener('click', function () {
     playButton.textContent = (noOfWords > 0 ? 'Resume' : 'Play');
     currentWordDiv.textContent = getSpellWord(selectedWord);
     displayIndex = customTextIndex;
+    customTextProgressSpan.textContent = customTextIndex.toString() + "/" + customWords.length.toString() + " (" + (customWords.length ? (customTextIndex*100/customWords.length) : 0).toFixed(2).toString() + "%)";
 });
 
 nextButton.addEventListener('click', function () {
@@ -356,6 +364,7 @@ nextButton.addEventListener('click', function () {
     playButton.textContent = (noOfWords > 0 ? 'Resume' : 'Play');
     currentWordDiv.textContent = getSpellWord(selectedWord);
     displayIndex = customTextIndex;
+    customTextProgressSpan.textContent = customTextIndex.toString() + "/" + customWords.length.toString() + " (" + (customWords.length ? (customTextIndex*100/customWords.length) : 0).toFixed(2).toString() + "%)";
 });
 
 playButton.addEventListener('click', async function () {
@@ -430,6 +439,7 @@ playButton.addEventListener('click', async function () {
             noOfWordsSpan.textContent = noOfWords.toString();
             noOfLettersSpan.textContent = noOfLetters.toString();
             timeElapsedSpan.textContent = getCleanTimeText(timeElapsed/1000);
+            customTextProgressSpan.textContent = customTextIndex.toString() + "/" + customWords.length.toString() + " (" + (customWords.length ? (customTextIndex*100/customWords.length) : 0).toFixed(2).toString() + "%)";
         }
         await new Promise(resolve => setTimeout(resolve, timePeriod));
     }
@@ -458,6 +468,7 @@ resetButton.addEventListener('click', function () {
     noOfWordsSpan.textContent = noOfWords.toString();
     noOfLettersSpan.textContent = noOfLetters.toString();
     timeElapsedSpan.textContent = (timeElapsed/1000).toString() + "s";
+    customTextProgressSpan.textContent = customTextIndex.toString() + "/" + customWords.length.toString() + " (" + (customWords.length ? (customTextIndex*100/customWords.length) : 0).toFixed(2).toString() + "%)";
     speechSynthesis.cancel();
 });
 
