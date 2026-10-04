@@ -5,7 +5,7 @@ const speakerToggle = document.getElementById('speaker-toggle-radio');
 const voiceDropDown = document.getElementById('voice-drop-down');
 const customTextDiv = document.getElementById('custom-text-div');
 const randomiseToggle = document.getElementById('randomise-toggle-radio');
-const lightModeToggle = document.getElementById('light-mode-toggle');
+const modeChangeButton = document.getElementById('mode-change-button');
 
 const randomWordsDisplay = document.getElementById('current-word');
 
@@ -60,7 +60,8 @@ speechSynthesis.onvoiceschanged = populateVoices;
     randomWords = await loadRandomWords();
 })();
 
-function setTheme (theme) {
+function setTheme(theme) {
+    modeChangeButton.textContent = (theme == 'light' ? 'Dark Theme?' : 'Light Theme?');
     document.documentElement.setAttribute(SITE_THEME, theme);
 }
 
@@ -217,9 +218,10 @@ function getSpellWord(inputWord) {
     return spellWord;
 }
 
-lightModeToggle.addEventListener("change", function () {
-    var theme = (this.checked ? "light" : "dark");
-    setTheme(theme);
+modeChangeButton.addEventListener('click', function () {
+    var currentTheme = document.documentElement.getAttribute(SITE_THEME);
+    currentTheme = (currentTheme == 'light' ? 'dark' : 'light');
+    setTheme(currentTheme);
 });
 
 randomWordsToggle.addEventListener('change', function() {

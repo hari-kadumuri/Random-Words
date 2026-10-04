@@ -175,3 +175,7 @@ label.voice-label {
 .submit-custom-text-button-class {
     margin-right: 0;
 }
+
+.secondary-buttons-class {
+    font-size: small;
+}
