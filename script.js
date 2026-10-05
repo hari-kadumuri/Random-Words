@@ -9,8 +9,6 @@ const customTextProgressSpan = document.getElementById('custom-text-progress-spa
 const randomiseToggle = document.getElementById('randomise-toggle-radio');
 const modeChangeButton = document.getElementById('mode-change-button');
 
-const randomWordsDisplay = document.getElementById('current-word');
-
 const previousButton = document.getElementById('previous-button');
 const playButton = document.getElementById('play-button');
 const resetButton = document.getElementById('reset-button');
@@ -274,7 +272,11 @@ speedDropDown.addEventListener('change', function() {
 });
 
 customSpeedButton.addEventListener('click', function () {
-    currentSpeed = (customSpeedInput.value ? customSpeedInput.value : currentSpeed);
+    if (customSpeedInput.value < 10 || customSpeedInput.value > 40) {
+        alert('Custom speed should be between 10 and 40 wpm');
+        return;
+    }
+    currentSpeed = Number(customSpeedInput.value);
 });
 
 function getCleanTimeText (timeInputInSeconds) {
@@ -453,7 +455,7 @@ resetButton.addEventListener('click', function () {
     avgWPM = 0;
     avgLPM = 0;
     instLPM = 0;
-    selectedWord = "Hello!";
+    let selectedWord = "Hello!";
     timeElapsed = 0;
     customTextIndex = 0;
     
